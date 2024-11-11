@@ -1,0 +1,96 @@
+### Common for all microservices ###
+# Compiled class files
+*.class
+
+# Build folders
+**/target/
+**/build/
+**/out/
+**/bin/
+
+# Log files
+*.log
+**/logs/
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE - IntelliJ IDEA
+**/.idea/
+*.iws
+*.iml
+*.ipr
+
+# IDE - Eclipse
+**/.apt_generated
+**/.classpath
+**/.factorypath
+**/.project
+**/.settings
+**/.springBeans
+**/.sts4-cache
+
+# IDE - VS Code
+**/.vscode/
+
+# Maven
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+
+# Environment files
+**/.env
+**/*.env
+**/.env.local
+
+### API Gateway ###
+/api-gateway/target/
+/api-gateway/logs/
+/api-gateway/application-*.yml
+!/api-gateway/application.yml
+
+### Config Server ###
+/config-server/target/
+/config-server/logs/
+/config-server/application-*.yml
+!/config-server/application.yml
+
+### Digital Directory ###
+/digital-directory/target/
+/digital-directory/logs/
+/digital-directory/application-*.yml
+!/digital-directory/application.yml
+
+### Service Registry ###
+/service-registry/target/
+/service-registry/logs/
+/service-registry/application-*.yml
+!/service-registry/application.yml
+
+### User Management ###
+/user-management/target/
+/user-management/logs/
+/user-management/application-*.yml
+!/user-management/application.yml
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+**/docker-compose.override.yml
+
+# Misc
+**/HELP.md
+*.swp
+*.swo 
