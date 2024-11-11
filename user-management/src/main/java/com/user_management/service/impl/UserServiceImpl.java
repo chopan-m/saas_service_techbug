@@ -21,14 +21,14 @@ public class UserServiceImpl implements UserService {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return (UserDetails) userRepository.findByEmail(username).orElseThrow(()->new UsernameNotFoundException("User not found"));
+                return (UserDetails) userRepository.findByEmailId(username).orElseThrow(()->new UsernameNotFoundException("User not found"));
             };
         };
     }
 
     @Override
-    public Optional<User> findUserById(Long id) {
-        return this.userRepository.findById(id);
+    public Optional<User> findUserById(Long userId) {
+        return this.userRepository.findById(userId);
     }
 
     @Override

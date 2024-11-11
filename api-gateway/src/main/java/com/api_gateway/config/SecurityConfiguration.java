@@ -36,7 +36,14 @@ public class SecurityConfiguration {
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
             .authorizeExchange(exchanges -> exchanges
-                .pathMatchers("/api/v1/auth/**", "/eureka/**", "/test/unauth/**", "/**/v3/api-docs/**").permitAll()
+                .pathMatchers(
+                    "/v3/api-docs/**", 
+                    "/swagger-ui/**",
+                    "/api/v1/auth/**", 
+                    "/eureka/**",
+                    "/fallback/**",
+                    "/test/unauth/**"
+                ).permitAll()
                 .anyExchange().authenticated()
             )
             .build();
@@ -45,10 +52,12 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -91,7 +91,7 @@ public class UserController {
             User user = optionalUser.get();
 
             user.setName(userEditRequest.getName());
-            user.setEmail(userEditRequest.getEmail());
+            user.setEmailId(userEditRequest.getEmail());
             user.setOrganization(userEditRequest.getOrganization());
 
             User dbUser = this.userService.saveUser(user);
