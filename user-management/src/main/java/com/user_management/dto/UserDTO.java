@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserDTO {
     private Integer userId;
+    private Integer id;
     private String name;
     private String emailId;
     private String organization;
@@ -27,4 +28,6 @@ public class UserDTO {
     private String phoneNumber1;
     private String phoneNumber2;
     private String phoneNumber3;
+    private String password;
 }
+

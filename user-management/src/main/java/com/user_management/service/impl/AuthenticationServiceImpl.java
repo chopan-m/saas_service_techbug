@@ -34,17 +34,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setOrganization(signUpRequest.getOrganization());
         user.setRole(Role.ROLE_USER);
         user.setEnabled(true);
-        user.setProfileImg(null);
-        user.setGotra(null);
-        user.setDateOfBirth(null);
-        user.setGender(null);
-        user.setAvatar(null);
-        user.setEmailId2(null);
-        user.setEmailId3(null);
-        user.setPhoneNumber1(null);
-        user.setPhoneNumber2(null);
-        user.setPhoneNumber3(null);
-        user.setId(null);
+        user.setProfileImg(signUpRequest.getProfileImg());
+        user.setGotra(signUpRequest.getGotra());
+        user.setDateOfBirth(signUpRequest.getDateOfBirth());
+        user.setGender(signUpRequest.getGender());
+        user.setAvatar(signUpRequest.getAvatar());
+        user.setEmailId2(signUpRequest.getEmailId2());
+        user.setEmailId3(signUpRequest.getEmailId3());
+        user.setPhoneNumber1(signUpRequest.getPhoneNumber1());
+        user.setPhoneNumber2(signUpRequest.getPhoneNumber2());
+        user.setPhoneNumber3(signUpRequest.getPhoneNumber3());
 
         User savedUser = userRepository.save(user);
         return UserMapper.mapToUserDto(savedUser);
@@ -61,7 +60,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             "/api/v1/user/profile/download/" + user.getProfileImg() : "";
             
         UserDTO userDto = new UserDTO(
-            user.getUserId(), 
+            user.getUserId(),
+            user.getUserId(),
             user.getName(), 
             user.getEmailId(), 
             user.getOrganization(),  
@@ -76,7 +76,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.getEmailId3(),
             user.getPhoneNumber1(),
             user.getPhoneNumber2(),
-            user.getPhoneNumber3()
+            user.getPhoneNumber3(),
+            user.getPassword()
         );
 
         SignInResponse signInResponse = new SignInResponse();
