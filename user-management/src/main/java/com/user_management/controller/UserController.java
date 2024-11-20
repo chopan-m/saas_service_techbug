@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -33,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,38 +82,64 @@ public class UserController {
             description = "HTTP Status 200"
     )
     @PutMapping("/user/update/{userid}")
-    public ResponseEntity<GenericResponse<UserDTO>> signup(@RequestBody UserEditRequest userEditRequest, @PathVariable Long userid){
-        System.out.println(userEditRequest.toString() + " userEdit request for id: "+ userid);
-        Optional<User> optionalUser = this.userService.findUserById(userid);
-        if(optionalUser.isPresent()) {
-            User user = optionalUser.get();
+    public ResponseEntity<GenericResponse<UserDTO>> signup(@RequestBody UserEditRequest userEditRequest, @PathVariable Integer userid) {
+        System.out.println(userEditRequest.toString() + " userEdit request for id: " + userid);
+        Optional<User> optionalUser = this.userService.findUserById(userid.longValue());
+        User user = null;
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
 
             user.setName(userEditRequest.getName());
-            user.setEmail(userEditRequest.getEmail());
+            user.setEmailId(userEditRequest.getEmail());
             user.setOrganization(userEditRequest.getOrganization());
 
             User dbUser = this.userService.saveUser(user);
 
-            String profileImgUrl = dbUser.getProfileImg() != null ? 
-                "/api/v1/user/profile/download/" + dbUser.getProfileImg() : "";
-            
+            String profileImgUrl = dbUser.getProfileImg() != null ?
+                    "/api/v1/user/profile/download/" + dbUser.getProfileImg() : "";
+
             UserDTO dto = UserMapper.mapToUserDto(dbUser);
             dto.setProfileImg(profileImgUrl);
-            
+
             GenericResponse<UserDTO> responseBody = GenericResponse.build(
-                CommonUtils.getPath(), 
-                HttpStatus.OK.value(),
-                true, 
-                "Success", 
-                "", 
-                dto
+                    CommonUtils.getPath(),
+                    HttpStatus.OK.value(),
+                    true,
+                    "Success",
+                    "",
+                    dto
             );
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
 
         } else {
-            UserDTO dto = new UserDTO();
-            GenericResponse<UserDTO> responseBody =  GenericResponse.build(CommonUtils.getPath(), HttpStatus.NOT_FOUND.value(),
-                    false, "User Not Found!!", "", dto);
+            UserDTO dto = new UserDTO(
+                null, // userId
+                null, // id
+                null, // name
+                null, // emailId
+                null, // organization
+                null, // role
+                null, // enabled
+                null, // profileImg
+                null, // gotra
+                null, // dateOfBirth
+                null, // password
+                null, // gender
+                null, // avatar
+                null, // emailId2
+                null, // emailId3
+                null, // phoneNumber1
+                null, // phoneNumber2
+                null  // phoneNumber3
+            );
+            GenericResponse<UserDTO> responseBody = GenericResponse.build(
+                CommonUtils.getPath(), 
+                HttpStatus.NOT_FOUND.value(),
+                false, 
+                "User Not Found!!", 
+                "", 
+                dto
+            );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
         }
 
@@ -132,11 +156,11 @@ public class UserController {
             description = "HTTP Status 200"
     )
     @PutMapping("/user/change/password/{userid}")
-    public ResponseEntity<GenericResponse<String>> changePassword(@PathVariable Long userid,
+    public ResponseEntity<GenericResponse<String>> changePassword(@PathVariable Integer userid,
                                                  @Valid @RequestBody ChangePasswordRequest request) {
         // Find the user by username
         System.out.println("ChangePassword Request for id: "+ userid);
-        Optional<User> optionalUser = this.userService.findUserById(userid);
+        Optional<User> optionalUser = this.userService.findUserById(userid.longValue());
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             // Check if the old password matches
@@ -178,7 +202,7 @@ public class UserController {
     )
 
     @PostMapping(path ="/user/upload/profile/photo/{userid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<GenericResponse<String>> uploadProfilePic(@RequestParam("file") MultipartFile file, @PathVariable("userid") Long userId) {
+    public ResponseEntity<GenericResponse<String>> uploadProfilePic(@RequestParam("file") MultipartFile file, @PathVariable("userid") Integer userId) {
 
         // Check if the file is empty
         if (file.isEmpty()) {
@@ -204,7 +228,7 @@ public class UserController {
             // e.g., file.transferTo(new File("/path/to/save/" + file.getOriginalFilename()));
 
             //userId
-            Optional<User> optionalUser = userService.findUserById(userId);
+            Optional<User> optionalUser = userService.findUserById(userId.longValue());
             User user = null;
             String currentProfilePicName = "";
             if(optionalUser.isPresent()) {
@@ -213,14 +237,14 @@ public class UserController {
 //                System.out.println(user);
             } else {
                 user = new User();
-                user.setId(Long.parseLong("temp"));
+                user.setUserId(Integer.valueOf("temp"));
             }
 
             Base64File fileInfo = fileStorageService.storeFile(file, currentProfilePicName);
 //            String entity = "File uploaded successfully: " + fileInfo.getName();
 
             String fileDownloadUri = "/api/v1/user/profile/download/"+fileInfo.getName();
-            if (!(user.getId().equals("temp"))) {
+            if (!(user.getUserId().equals("temp"))) {
                 System.out.println("Update ProfilePic for userid: " + userId);
                 user.setProfileImg(fileInfo.getName());
                 userService.saveUser(user);
@@ -248,12 +272,12 @@ public class UserController {
 //            description = "HTTP Status 200"
 //    )
 //    @GetMapping("/user/profile/photo/base64/do-not-use-it")
-    public ResponseEntity<GenericResponse<String>> getProfilePic(@RequestParam("userid") Long userId) throws IOException {
+    public ResponseEntity<GenericResponse<String>> getProfilePic(@RequestParam("userid") Integer userId) throws IOException {
 
         String fileName = null;
 
         // fetch filename from db against the userid
-        Optional<User> optionalUser = userService.findUserById(userId);
+        Optional<User> optionalUser = userService.findUserById(userId.longValue());
         if(optionalUser.isPresent()) {
             User user  = optionalUser.get();
             fileName = user.getProfileImg();
@@ -339,12 +363,12 @@ public class UserController {
             description = "HTTP Status 200"
     )
     @GetMapping("/user/get/profile/photo")
-    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam("userid") Long userId) throws IOException {
+    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam("userid") Integer userId) throws IOException {
 
        String fileName = null;
 
         // fetch filename from db against the userid
-        Optional<User> optionalUser = userService.findUserById(userId);
+        Optional<User> optionalUser = userService.findUserById(userId.longValue());
         if(optionalUser.isPresent()) {
             User user  = optionalUser.get();
             fileName = user.getProfileImg();

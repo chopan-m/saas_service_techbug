@@ -2,16 +2,19 @@ app.env=PROD
 spring.application.name=USER-MANAGEMENT
 
 server.port=8083
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-spring.data.mongodb.uri=mongodb+srv://Admin:Cogveel@cluster0.x0lmn.mongodb.net/NEUQUIP?retryWrites=true&w=majority&appName=Cluster0
-openapi.service.url=http://185.199.52.115:8082
-allowed.origin.urls=http://localhost:8082,http://185.199.52.115:8082,http://localhost:4200,http://localhost:8083,http://localhost:4000,http://185.199.52.115:3000,http://185.199.52.115:4000
+#eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+allowed.origin.urls=http://localhost:4000
 file.upload-dir=uploads/
 
-spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
-logging.level.org.springframework.data.mongodb.core=DEBUG
-spring.data.mongodb.auto-index-creation=true
+# Add this configuration to application.properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/business-directory
+spring.datasource.username=postgres
+spring.datasource.password=admin
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
 
 openapi.service.title=USER-MANAGEMENT api-docs
 openapi.service.version=1.0.0
@@ -24,3 +27,4 @@ spring.servlet.multipart.max-file-size=2MB
 
 # Threshold after which files are written to disk.
 spring.servlet.multipart.file-size-threshold=2KB
+

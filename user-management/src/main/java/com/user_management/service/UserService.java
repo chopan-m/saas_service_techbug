@@ -10,3 +10,4 @@ public interface UserService {
     Optional<User> findUserById(Long id);
     User saveUser(User user);
 }
+
